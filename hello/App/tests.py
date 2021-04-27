@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.urls import resolve
 from App.views import home_page
 from django.http import HttpRequest
+from App.views import home_page
 
 # Create your tests here.
 class HomePageTest(TestCase):
@@ -11,9 +12,11 @@ class HomePageTest(TestCase):
         self.assertEqual(found.func,home_page)
 
     def test_home_page_returns_correct_html(self):
-        request = HttpRequest()
-        response=home_page(request)
-        html = response.content.decode('utf-8') #使用断言 判断返还的html中的文本内容是否含有 我们所要求的的内容
+        response = self.client.get('/')
+        html = response.content.decode('utf8')
         self.assertTrue(html.startswith('<html>'))
-        self.assertIn('<title>To-Do lists</title>',html)
-        self.assertTrue(html.endswith('</html>'))
+        self.assertIn('<title>To-Do lists</title>', html)
+        self.assertTrue(html.strip().endswith('</html>'))
+
+        # self.assertTemplateUsed(response, 'wrong.html')
+        self.assertTemplateUsed(response, 'home.html')
